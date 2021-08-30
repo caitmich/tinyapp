@@ -18,6 +18,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//pass url database to our template in urls_index
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
