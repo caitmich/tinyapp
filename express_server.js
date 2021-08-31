@@ -26,6 +26,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+//Logout
+app.post("/logout", (req, res) => {
+  const username = req.cookies['username'];
+  res.clearCookie('username', username);
+
+  res.redirect("/urls");
+});
+
 //Login
 app.post("/login", (req, res) => {
   const value = req.body['username'];
