@@ -28,8 +28,8 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
-            <td><form class="form-inline" method="POST" action="/urls/:shortURL/delete"> 
-                    <button type="delete" class="btn btn-primary" style="color:palevioletred; border-color: palevioletred;  background-color: whitesmoke;">delete</button>
+            <td><form class="form-inline" method="POST" action="/urls/<%=url%>/delete"> 
+                    <button type="submit" class="btn btn-primary" style="color:palevioletred; border-color: palevioletred;  background-color: whitesmoke;">delete</button>
             </form></td>
           </tr>
         <% } %>

@@ -13,6 +13,15 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  //fetch url based on shortURL
+  const shortURL = req.params.shortURL;
+  //delete URL resource from Db
+  delete urlDatabase[shortURL]
+  //redirect to /urls
+  res.redirect("/urls");
+});
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 })
@@ -20,6 +29,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
 
 function generateRandomString() {
   return Math.random().toString(36).slice(-6);
