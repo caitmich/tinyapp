@@ -4,10 +4,11 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
-app.use(cookieParser());
-
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
+
+
 
 // object used to keep track of all urls and their short-forms:
 const urlDatabase = {
@@ -25,6 +26,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+//Login
+app.post("/login", (req, res) => {
+  const value = req.body['username'];
+  res.cookie('username', value);
+
+  res.redirect("/urls");
+});
+
 //Edit URL
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL
@@ -35,7 +44,8 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //enter new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 })
 
 app.get("/urls.json", (req, res) => {
@@ -56,13 +66,13 @@ app.post("/urls", (req, res) => {
 
 //show tinyURL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {shortURL: req.params.shortURL, longURL: (urlDatabase[req.params.shortURL])};
+  const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: (urlDatabase[req.params.shortURL]) };
   res.render("urls_show", templateVars);
 });
 
 //pass url database to our template in urls_index
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { username: req.cookies["username"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
