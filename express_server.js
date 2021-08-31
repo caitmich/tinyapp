@@ -13,6 +13,14 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+})
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
 function generateRandomString() {
   return Math.random().toString(36).slice(-6);
 };
@@ -28,19 +36,11 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 //pass url database to our template in urls_index
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
-
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-})
 
 //redirect shortURL to its longURL
 app.get("/u/:shortURL", (req, res) => {
