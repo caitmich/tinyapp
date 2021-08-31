@@ -9,11 +9,24 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         
+
+        <% if(username){ %>
+
+          <h5 style="color: black; padding: 10px;">Logged in as, <%= username %></h5>
+          <form class="form-inline" method="POST" action="/logout">
+            <!-- <input class="form-control" type="text" name="username" placeholder="Username" > -->
+            <button type="submit" class="btn btn-primary" style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;">Logout</button>
+          </form>
+
+        <% } else{ %>  
+          
           <form class="form-inline" method="POST" action="/login">
             <input class="form-control" type="text" name="username" placeholder="Username" >
             <button type="submit" class="btn btn-primary" style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;">Login</button>
           </form>
-          <h5 style="color: black; padding: 10px;">Hello, <%= username %></h5>
+
+       <% } %>
+
       </div>
     </div>
   </nav>
