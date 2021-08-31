@@ -13,6 +13,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//Delete a url:
 app.post("/urls/:shortURL/delete", (req, res) => {
   //fetch url based on shortURL
   const shortURL = req.params.shortURL;
@@ -22,6 +23,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+//Edit URL
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  res.redirect("/urls");
+});
+
+//enter new url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 })
@@ -30,17 +40,19 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-
+//create a new tinyURL
 function generateRandomString() {
   return Math.random().toString(36).slice(-6);
 };
 
+//add new url and tinyURL to Db
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString()
   urlDatabase[shortURL] = req.body.longURL;  // Log the POST request to urlDatabase
   res.redirect('/urls/' + shortURL);         // Respond with redirect
 });
 
+//show tinyURL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL: (urlDatabase[req.params.shortURL])};
   res.render("urls_show", templateVars);
