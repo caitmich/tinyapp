@@ -53,19 +53,19 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //Logout
 app.post("/logout", (req, res) => {
-  const username = req.cookies['username'];
-  res.clearCookie('username', username);
+  const username = req.cookies['user_id'];
+  res.clearCookie('user_id', id);
 
   res.redirect("/urls");
 });
 
-//Login
-app.post("/login", (req, res) => {
-  const value = req.body['username'];
-  res.cookie('username', value);
+// //Login
+// app.post("/login", (req, res) => {
+//   const value = req.body['username'];
+//   res.cookie('username', value);
 
-  res.redirect("/urls");
-});
+//   res.redirect("/urls");
+// });
 
 //Edit URL
 app.post("/urls/:shortURL", (req, res) => {
@@ -149,22 +149,26 @@ app.post("/register", (req, res) => {
     return res.send(res.statusCode = 400);
   } 
   
-  
   users[id] = { id, email, password };
 
   if (users[id].email === '' || users[id].password === ''){
     return res.send(res.statusCode = 400);
   }
   res.cookie('user_id', id);
-  
 
-  
-  
   res.redirect("/urls");
   
-  
-  
 });
+
+app.get("/login", (req, res) => {
+  const userId = req.cookies["user_id"]
+  const templateVars = { user: users[userId] };
+  res.render('urls_login', templateVars);
+  });
+  
+  // app.post("/login", (req, res) => {
+
+// });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
