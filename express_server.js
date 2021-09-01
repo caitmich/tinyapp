@@ -66,7 +66,12 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //enter new url
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const userId = req.cookies["user_id"]
+  const templateVars = { 
+    user: users[userId]  
+  };
+
+
   res.render("urls_new", templateVars);
 })
 
@@ -88,13 +93,25 @@ app.post("/urls", (req, res) => {
 
 //show tinyURL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: (urlDatabase[req.params.shortURL]) };
+
+  const userId = req.cookies["user_id"]
+  const templateVars = { 
+    user: users[userId],
+    shortURL: req.params.shortURL, 
+    longURL: (urlDatabase[req.params.shortURL]) 
+  };
+
   res.render("urls_show", templateVars);
 });
 
 //pass url database to our template in urls_index
 app.get("/urls", (req, res) => {
-  const templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  const userId = req.cookies["user_id"]
+  console.log(users[userId]);
+  const templateVars = { 
+    user: users[userId],  
+    urls: urlDatabase };
+
   res.render("urls_index", templateVars);
 });
 
@@ -105,7 +122,8 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { id: req.cookies["user_id"] };
+  const userId = req.cookies["user_id"]
+  const templateVars = { user: users[userId] };
   res.render('urls_register', templateVars);
 });
 
