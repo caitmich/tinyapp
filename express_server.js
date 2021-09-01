@@ -105,13 +105,19 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { id: req.cookies["user_id"] };
   res.render('urls_register', templateVars);
 });
 
 app.post("/register", (req, res) => {
+  const id = generateRandomString();
   const email = req.body.email
   const password = req.body.password
+
+  users[id] = { id, email, password };
+
+  res.cookie('user_id', id);
+  res.redirect("/urls");
 
 });
 
