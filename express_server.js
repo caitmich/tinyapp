@@ -9,7 +9,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 
-
 // object used to keep track of all urls and their short-forms:
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -29,6 +28,18 @@ const users = {
     password: "dishwasher-funk"
   }
 };
+
+const verifyUser = function (users, email) {
+
+  for (const user in users) {
+    if(email === (users[user].email)){
+    return false;
+  } else {
+
+    return true;
+  }
+  }
+}
 
 //Delete a url:
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -132,11 +143,27 @@ app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
 
+  const authenticate = verifyUser(users, req.body.email)
+
+  if (authenticate === false) {
+    return res.send(res.statusCode = 400);
+  } 
+  
+  
   users[id] = { id, email, password };
 
+  if (users[id].email === '' || users[id].password === ''){
+    return res.send(res.statusCode = 400);
+  }
   res.cookie('user_id', id);
-  res.redirect("/urls");
+  
 
+  
+  
+  res.redirect("/urls");
+  
+  
+  
 });
 
 app.listen(PORT, () => {
