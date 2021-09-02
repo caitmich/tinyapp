@@ -137,10 +137,15 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
 
   const userId = req.cookies["user_id"]
+
+  //returns an array of the shortURLs that belong to the logged in user:
+  const myUrls = urlsForUser(userId);
+
   const templateVars = { 
     user: users[userId],
     shortURL: req.params.shortURL, 
-    longURL: (urlDatabase[req.params.shortURL].longURL) 
+    longURL: (urlDatabase[req.params.shortURL].longURL) , 
+    myUrls
   };
 
   res.render("urls_show", templateVars);

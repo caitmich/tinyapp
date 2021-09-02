@@ -13,11 +13,18 @@
   <div class="card text-center">
       <div class="card-header">
 
-        <% if(user){ %>
-          <h3>Your TinyURL:</h3>
-            <% } else{ %> 
-          <h3>Please log in to save TinyURLs</h3>
+        <% if (user){ %>
+          <% for (tinyURL of myUrls) { %>
+             <% if (shortURL === tinyURL){ %>
+            <h3> Your TinyURL:</h3>
+            <% } %>
+            <% if (shortURL !== tinyURL){ %>
+              <h3> This TinyURL is not in Your Library</h3>
               <% } %>
+        <% } %>
+        <% } else{ %> 
+          <h3>Please log in to save TinyURLs</h3>
+        <% } %>
 
         <h4> <link href="#"></h4>
       </div>
