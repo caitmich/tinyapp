@@ -30,16 +30,13 @@ const users = {
 };
 
 const verifyUser = function (users, email) {
-
-  for (const user in users) {
-    if(email === (users[user].email)){
-    return false;
-  } else {
-
-    return true;
-  }
-  }
+  for (const userId in users) {
+    if(users[userId].email === email){
+    return users[userId];
+  } 
 }
+return false;
+};
 
 //Delete a url:
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -53,19 +50,30 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //Logout
 app.post("/logout", (req, res) => {
-  const username = req.cookies['user_id'];
+  const id = req.cookies['user_id'];
   res.clearCookie('user_id', id);
 
   res.redirect("/urls");
 });
 
 // //Login
-// app.post("/login", (req, res) => {
-//   const value = req.body['username'];
-//   res.cookie('username', value);
+app.post("/login", (req, res) => {
+const email = req.body.email;
+const password = req.body.password;
 
-//   res.redirect("/urls");
-// });
+const verifyEmail = verifyUser(users, email);
+
+if (verifyEmail === false) {
+  return res.send(res.statusCode = 403, 'Email not Found');
+}
+if (verifyEmail.password !== password) {
+  return res.send(res.statusCode = 403, 'Wrong Password');
+}
+
+
+  res.cookie('user_id', verifyEmail.id);
+  res.redirect("/urls");
+});
 
 //Edit URL
 app.post("/urls/:shortURL", (req, res) => {
@@ -81,7 +89,6 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { 
     user: users[userId]  
   };
-
 
   res.render("urls_new", templateVars);
 })
@@ -165,10 +172,6 @@ app.get("/login", (req, res) => {
   const templateVars = { user: users[userId] };
   res.render('urls_login', templateVars);
   });
-  
-  // app.post("/login", (req, res) => {
-
-// });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
