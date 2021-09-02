@@ -1,10 +1,12 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
@@ -44,7 +46,6 @@ return false;
 };
 
 const urlsForUser = function(id) {
-  //fetch logged in account id
 let myUrls = []
   //loop through url database
   for (address in urlDatabase) {
@@ -54,36 +55,49 @@ let myUrls = []
     }
   }
   //return urls with matching user id
-return myUrls;
+return myUrls.map(String);
 };
 
-const deleteURL = function(shortURL, myUrls) {
-  for (const mine of myUrls) {
-    if (shortURL === mine) {
-      return true;
-    }
-  }
-  return false;
-};
+// //Login
+app.post("/login", (req, res) => {
+const email = req.body.email;
+const password = req.body.password;
+
+const verifyEmail = verifyUser(users, email);
+
+if (verifyEmail) {
+  if (verifyEmail.password === password) {
+  res.cookie('user_id', verifyEmail.id);
+  res.redirect("/urls"); 
+  console.log(req.cookies.id)
+  
+} else {
+    return res.send(res.statusCode = 403, 'Wrong Password');
+}
+}
+ 
+});
 
 //Delete a url:
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userId = req.cookies['user_id'];
-  const myUrls = urlsForUser(userId);
+  const userId = req.cookies.user_id;
+  console.log(req.cookies.user_id);
+  
+  // const myUrls = urlsForUser(userId);
   const shortURL = req.params.shortURL;
 
-  const del = deleteURL(shortURL, myUrls);
+  const belongsTo = urlDatabase[req.params.shortURL].userId;
 
-  if (del === true) {
-     //delete URL resource from Db
-   delete urlDatabase[shortURL];
-  };
-  if (del === false) {
-    //throw err if it's not my url
+  if (!userId || userId !== belongsTo) {
     res.send(res.statusCode = 400, "You cannot delete Urls that are not your own");
+    console.log(userId);
+    
+  } else {
+    // delete URL resource from Db
+    delete urlDatabase[shortURL];
+    console.log('success');
+    res.redirect("/urls");
   }
-  //redirect to /urls
-  res.redirect("/urls");
 });
 
 //Logout
@@ -94,31 +108,25 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// //Login
-app.post("/login", (req, res) => {
-const email = req.body.email;
-const password = req.body.password;
-
-const verifyEmail = verifyUser(users, email);
-
-if (verifyEmail === false) {
-  return res.send(res.statusCode = 403, 'Email not Found');
-}
-if (verifyEmail.password !== password) {
-  return res.send(res.statusCode = 403, 'Wrong Password');
-}
-
-
-  res.cookie('user_id', verifyEmail.id);
-  res.redirect("/urls");
-});
-
 //Edit URL
 app.post("/urls/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL
+
+  const userId = req.cookies.user_id;
+  const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
-  urlDatabase[shortURL].longURL = longURL
-  res.redirect("/urls");
+  const belongsTo = urlDatabase[req.params.shortURL].userId;
+
+  if (!userId || userId !== belongsTo) {
+    res.send(res.statusCode = 400, "You cannot edit Urls that are not your own");
+    return res.redirect("/urls");
+    
+  } else {
+    //reassign longURL to new url
+    urlDatabase[shortURL].longURL = longURL
+
+    res.redirect("/urls");
+  }
+  
 });
 
 //enter new url
@@ -199,7 +207,8 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email
-  const password = req.body.password
+  const textPassword = req.body.password
+  const password = bcrypt.hashSync(password, 10);
 
   //return error if one field is blank
   if (email === '' || password === ''){
