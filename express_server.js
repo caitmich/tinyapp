@@ -150,17 +150,22 @@ app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
 
-  const authenticate = verifyUser(users, req.body.email)
-
-  if (authenticate === false) {
-    return res.send(res.statusCode = 400);
-  } 
+  //return error if one field is blank
+  if (email === '' || password === ''){
+    return res.send(res.statusCode = 400, "Please complete both fields");
+  }
   
+  //check to see if email is already registered
+  const authenticate = verifyUser(users, email);
+
+  if (authenticate !== false) {
+    return res.send(res.statusCode = 400, 'Email already registered');
+  } 
+
+//if all is good, add new user to Db
   users[id] = { id, email, password };
 
-  if (users[id].email === '' || users[id].password === ''){
-    return res.send(res.statusCode = 400);
-  }
+//create cookie
   res.cookie('user_id', id);
 
   res.redirect("/urls");
