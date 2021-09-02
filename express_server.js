@@ -57,13 +57,31 @@ let myUrls = []
 return myUrls;
 };
 
+const deleteURL = function(shortURL, myUrls) {
+  for (const mine of myUrls) {
+    if (shortURL === mine) {
+      return true;
+    }
+  }
+  return false;
+};
 
 //Delete a url:
 app.post("/urls/:shortURL/delete", (req, res) => {
-  //fetch url based on shortURL
+  const userId = req.cookies['user_id'];
+  const myUrls = urlsForUser(userId);
   const shortURL = req.params.shortURL;
-  //delete URL resource from Db
-  delete urlDatabase[shortURL]
+
+  const del = deleteURL(shortURL, myUrls);
+
+  if (del === true) {
+     //delete URL resource from Db
+   delete urlDatabase[shortURL];
+  };
+  if (del === false) {
+    //throw err if it's not my url
+    res.send(res.statusCode = 400, "You cannot delete Urls that are not your own");
+  }
   //redirect to /urls
   res.redirect("/urls");
 });
