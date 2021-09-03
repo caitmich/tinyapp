@@ -3,6 +3,7 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
+const {verifyUser} = require("./helpers");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -48,14 +49,14 @@ const users = {
   }
 };
 
-const verifyUser = function (users, email) {
-  for (const userId in users) {
-    if(users[userId].email === email){
-    return users[userId];
-  } 
-}
-return false;
-};
+// const verifyUser = function (users, email) {
+//   for (const userId in users) {
+//     if(users[userId].email === email){
+//     return users[userId];
+//   } 
+// }
+// return false;
+// };
 
 const urlsForUser = function(id) {
 let myUrls = []
@@ -85,7 +86,7 @@ app.post("/register", (req, res) => {
   //check to see if email is already registered
   const authenticate = verifyUser(users, email);
 
-  if (authenticate !== false) {
+  if (authenticate) {
     return res.send(res.statusCode = 400, 'Email already registered');
   } 
 
@@ -260,3 +261,7 @@ app.get("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+module.exports = {
+  users,
+}

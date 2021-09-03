@@ -5,5 +5,9 @@ const verifyUser = function (users, email) {
     return users[userId];
   } 
 }
-return false;
+// return false;
 };
+
+module.exports = {
+  verifyUser,
+}
