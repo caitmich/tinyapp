@@ -1,37 +1,49 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        
-        <!-- if logged in -->
-        <% if(user){ %>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup"
+      style="display: flex; justify-content: space-between;">
 
-          <h5 style="color: black; padding: 10px;">Logged in as, <%= user.email %></h5>
-          
-          <form class="form-inline" method="POST" action="/logout">
-            <button type="submit" class="btn btn-primary" style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;">Logout</button>
+      <div style="display: flex; flex-direction: row;"> <a class="nav-item nav-link" href="/urls">My URLs</a>
+        <a class="nav-item nav-link" href="/urls/new">Create a New Short Link</a>
+      </div>
+
+      <!-- if logged in -->
+      <% if(user){ %>
+        <div style="display: flex; flex-direction: row; justify-content: center;">
+          <span style="color: black; padding: 10px;">Logged in as, <%= user.email %>
+          </span>
+
+
+          <form method="POST" action="/logout">
+            <div class="form-group float-right"></div>
+            <button type="submit" class="btn btn-primary"
+              style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;">Logout</button>
           </form>
+        </div>
 
-        <% } else{ %>  
+        <% } else{ %>
           <!-- register -->
+          <div style="display: flex; flex-direction: row; justify-content: center;">
+
           <form class="form-inline" method="GET" action="/register">
-            <button type="submit" class="btn btn-primary" style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;">Register</button>
+            <button type="submit" class="btn btn-primary"
+              style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;margin: 5px;">Register</button>
           </form>
 
           <!-- login -->
           <form class="form-inline" method="GET" action="/login">
-            <button type="submit" class="btn btn-primary" style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;">Login</button>
+            <button type="submit" class="btn btn-primary"
+              style="color: lightseagreen; border-color: lightseagreen;  background-color: whitesmoke;margin: 5px;">Login</button>
           </form>
+        </div>
+          <% } %>
 
-       <% } %>
-
-      </div>
+    </div>
     </div>
   </nav>
 </header>
