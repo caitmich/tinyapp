@@ -2,7 +2,7 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-const { verifyUser } = require("./helpers");
+const { verifyUser, generateRandomString } = require("./helpers");
 
 const app = express();
 const PORT = 8080;
@@ -41,11 +41,6 @@ const users = {
     password: '$2b$10$17kOBe/C9sBIYsIhMNVIm.W47nCjJ1rpHEtbAE32OgAEVu9adNYxG'
     // hello
   }
-};
-
-//generate random 6-digit alpha-numeric code
-function generateRandomString() {
-  return Math.random().toString(36).slice(-6);
 };
 
 //return an array of URLs that are linked to the userId
