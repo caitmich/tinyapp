@@ -17,9 +17,6 @@
   <%- include('partials/_header') %>
     <main style="margin: 1em;">
 
-      <!-- if logged in -->
-      <% if(user){ %>
-        <!-- when logged in, they can access the page as normal -->
         <h3>Create TinyURL</h3>
         <form class="form-inline" action="/urls" method="POST">
           <div class="form-group mb-2">
@@ -29,12 +26,6 @@
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
         </form>
-
-        <% } else{ %>
-          <!-- redirect to login page  -->
-          <h5> Please Log in to Access this Page </h5>
-
-          <% } %>
 
 
 
