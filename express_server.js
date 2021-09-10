@@ -2,7 +2,9 @@ const express = require("express");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
-const { verifyUser, generateRandomString } = require("./helpers");
+const { verifyUser, generateRandomString, urlsForUser } = require("./helpers");
+const { urlDatabase, users } = require("./db");
+
 
 const app = express();
 const PORT = 8080;
@@ -16,43 +18,6 @@ app.use(
   })
 );
 
-const urlDatabase = {
-  b2xVn2: {
-    longURL: "http://www.lighthouselabs.ca",
-    userId: "e6x827",
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userId: "xsd50s",
-  },
-};
-
-//object used to keep track of users:
-const users = {
-  xsd50s: {
-    id: "xsd50s",
-    email: "user0@example.com",
-    password: "$2b$10$D.G9c3/vzLJBfDhLQHUYEeeEeQQADDIFVqWCNa3IyS3DtcQXbdsbS",
-  },
-  e6x827: {
-    id: "e6x827",
-    email: "hello@hello.com",
-    password: "$2b$10$17kOBe/C9sBIYsIhMNVIm.W47nCjJ1rpHEtbAE32OgAEVu9adNYxG",
-  },
-};
-
-//return an array of URLs that are linked to the userId
-const urlsForUser = function (id) {
-  let myUrls = [];
-  for (const address in urlDatabase) {
-    if (urlDatabase[address].userId === id) {
-      myUrls.push(address);
-    }
-  }
-  //return urls with matching user ids
-  return myUrls.map(String);
-};
-
 //register for an account
 app.post("/register", (req, res) => {
   const id = generateRandomString();
@@ -61,7 +26,7 @@ app.post("/register", (req, res) => {
   const password = bcrypt.hashSync(enterPassword, 10);
 
   //return error if one field is blank
-  if (email === "" || enterPassword === "") {
+  if (!email || !enterPassword) {
     return res.send((res.statusCode = 400), "Please complete both fields");
   }
 
@@ -88,7 +53,7 @@ app.post("/login", (req, res) => {
 
   const userInfo = verifyUser(users, email);
 
-  if (email === "" || password === "") {
+  if (!email || !password) {
     return res.status(400).send("Please complete both fields");
   }
 
@@ -102,7 +67,7 @@ app.post("/login", (req, res) => {
       userInfo.password
     );
     //if password matches hashed password stored in userInfo:
-    if (compareHashed === true) {
+    if (compareHashed) {
       req.session.user_id = userInfo.id;
       return res.redirect("/urls");
     }
@@ -177,10 +142,10 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const userId = req.session.user_id;
 
-  //if not logged in, cannot add to database
-  // if (!userId) {
-  //   return res.send(res.statusCode = 400, "Please log in or create an account")
-  // }
+  // if not logged in, cannot add to database
+  if (!userId) {
+    return res.send(res.statusCode = 400, "Please log in or create an account");
+  }
 
   // if logged in, add new urls to database
   urlDatabase[shortURL] = { longURL: longURL, userId: userId };
@@ -206,6 +171,10 @@ app.get("/urls/:shortURL", (req, res) => {
 
   //returns an array of the shortURLs that belong to the logged in user:
   const myUrls = urlsForUser(userId);
+
+  if (urlDatabase[req.params.shortURL].userId !== userId) {
+    return res.send((res.statusCode = 400), "You do not have permisison to access this page");
+  }
 
   const templateVars = {
     user: users[userId],
